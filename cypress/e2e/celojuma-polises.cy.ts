@@ -1,30 +1,30 @@
+import { locales } from "../utils/localisation";
+
 describe('Travel insurance', () => {
   it('Checks it is possile to change travel insurance details', () => {
     let policyTitle: string;
     let policyPrice: string;
 
+    // Visit BTA page
     cy.visit('https://www.bta.lv/');
 
-    // page is not created to be tested, elements do not have IDs or special "testid" attributes
-
-    // close cookies modal
-    cy.get('#module-284').find('.button.focus-button').click();
+    // Close cookies modal
+    cy.get('.cookies-notification .focus-button').click();
 
     // Open "Travel" tab
-    // Text content differs depending on selected language, so using "img" 
-    cy.get('.item.quick-menu-btn').find('img[src*="travel"]').click();
+    cy.get('.item.quick-menu-btn').contains(locales.lv.travel).click();
 
     // Choose destination
     cy.get('#regionalSelectorRegion-open .text-icon').should('be.visible'); // ensure field data fully loaded
     cy.get('#regionalSelectorRegion-open').click();
     cy.get('#regionalSelectorCountry-showListSearch').click();
     cy.get('#regionalSelectorCountry-addCountry').click();
-    cy.get('#regionalSelectorCountry-typedValue').click().type('Indija');
-    cy.get('#regionalSelectorCountry-selectItem[data-value="Indija"]').click();
+    cy.get('#regionalSelectorCountry-typedValue').click().type(locales.lv.India);
+    cy.get(`#regionalSelectorCountry-selectItem[data-value="${locales.lv.India}"]`).click();
     cy.get('#regionalSelectorCountry-applyButton').click();
 
     // Check selected destination
-    cy.get('#regionalSelectorRegion-open').should('contain.text', 'Visa pasaule');
+    cy.get('#regionalSelectorRegion-open').should('contain.text', locales.lv.worldwide);
 
     // Change "Activities"
     cy.get('#travelActivities-open').click();
@@ -32,7 +32,7 @@ describe('Travel insurance', () => {
 
     // Submit first step
     cy.get('[data-type="travelSubmit"]').click();
-    cy.get('h2.title').contains('Izvēlies programmu').should('be.visible'); // ensure the data was processed
+    cy.get('h2.title').contains(locales.lv.choosePlan).should('be.visible'); // ensure the data was processed
 
     // Select optimal policy
     cy.get('[data-type="policyItemOPTIMAL"] .title').then(($el) => {
@@ -41,10 +41,10 @@ describe('Travel insurance', () => {
         policyPrice = $el[0].textContent;
 
         cy.get('[data-type="policyItemOPTIMAL"]').find('[datatype="selectPolicyPlanOPTIMAL"]').click({ force: true });
-        cy.get('h2.title').should('contain.text', 'Vēlies pievienot papildu aizsardzību?'); // ensure data was processed
+        cy.get('h2.title').should('contain.text', locales.lv.extraCover); // ensure data was processed
     
         //Checking selected policy
-        cy.get('#insurance-plan-widget .title').should('contain.text', 'Mana polise');
+        cy.get('#insurance-plan-widget .title').should('contain.text', locales.lv.myPolicy);
         cy.get('#insurance-plan-widget .item-name').should('contain.text', policyTitle);
         cy.get('#insurance-plan-widget .item-value').should('contain.text', policyPrice);
       });
@@ -57,10 +57,11 @@ describe('Travel insurance', () => {
     cy.get('.confirm-details').click();
     cy.get('.single-popup').should('not.be.visible'); // ensure popup and loading closed
 
+    // Not possile to check Sum insured as it is not visible after closing popup 
+
     // Proceed to the next step
     cy.get('#insurance-plan-widget button').click({ force: true });
-    cy.get('h3.title').should('contain.text', 'Ceļotāju dati'); // ensure data was processed
-    cy.get
+    cy.get('h3.title').should('contain.text', locales.lv.travelersData); // ensure data was processed
 
     // Check fields are not prefilled
     cy.get('#travelerFirstName0 input').should('be.empty');
